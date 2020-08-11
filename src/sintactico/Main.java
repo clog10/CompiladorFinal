@@ -10,7 +10,6 @@ public class Main {
     public static SimTemporal sTemp; 
 
     public static void main(String[] args) {
-        //String datos="int x,y; y = 5;  x = (y*2)+5; int z; z = x+y;";
 
         String datos= "int x;  x = 3+2; double y;  y=3-2; float z; z=4/2;";
         
@@ -24,6 +23,7 @@ public class Main {
         Sintactico sin = new Sintactico(lex);
         //System.out.println(sin.getMensajes().toString());
         
+        System.out.println("Gutierrez Loaeza Carlos de Jesus");
         System.out.println("=======< Tabla >========");
         for (Iterator it = tSim.getTabla().values().iterator(); it.hasNext();) {
             Simbolo s = (Simbolo)it.next();
@@ -32,12 +32,24 @@ public class Main {
         
 //        System.out.println("=======< Cuadruplos >========");
 //        System.out.println(sin.getCodigo().toString());
+        
         System.out.println();
         System.out.println("=======< Ensamblador >========");
         System.out.println(sin.getEnsamblador().toString());
     }
     
 }
+
+
+
+
+
+
+
+
+
+
+
 
 
 

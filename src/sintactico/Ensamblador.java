@@ -11,7 +11,6 @@ public class Ensamblador {
     public String arg2;
     public String resultado;
     
-    
     public String reg1="AX";
     public String reg2="BX";
     public String reg3="CX";
@@ -38,6 +37,7 @@ public class Ensamblador {
     }
 
 }
+
 
 
 

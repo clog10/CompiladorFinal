@@ -18,7 +18,7 @@ public class Sintactico {
         token = lexico.lex();
         mensajes = new StringBuffer();
         codigo = new StringBuffer();
-        ensamblador=new StringBuffer();
+        ensamblador = new StringBuffer();
         this.simS();
         mensajes.append("Fin del Sintáctico");
     }
@@ -56,9 +56,9 @@ public class Sintactico {
 
         //S21 --> Codigo inter
         Cuadruplo cua = new Cuadruplo();
-        
+
         //Ensamblador
-        Ensamblador e=new Ensamblador();
+        Ensamblador e = new Ensamblador();
 
         Simbolo sim = new Simbolo();
         //S19
@@ -101,11 +101,11 @@ public class Sintactico {
                     cua.arg1 = sim.getNombre();
                 }
                 cua.resultado = id.getNombre();
-                
+
                 codigo.append(cua.toString() + "\n");
-                e.resultado=id.getNombre();
-                ensamblador.append(e.toString()+"\n");
-                
+                e.resultado = id.getNombre();
+                ensamblador.append(e.toString() + "\n");
+
             } else {
                 if (debug) {
                     mensajes.append("simI: " + token + "\n");
@@ -126,7 +126,7 @@ public class Sintactico {
      * Analisis sintactico del simbolo D, desclaraciones tipo int
      *
      * D -> int K L->id K K->, L K->lamda
-    *
+     *
      */
     private void simD() {
         boolean salida = false;
@@ -181,7 +181,7 @@ public class Sintactico {
      * Analisis sintactico del simbolo F.
      *
      * F -> (E) F -> id F -> num
-    *
+     *
      */
     private void simF(Simbolo sim, Numero numero) {
         if (debug) {
@@ -204,52 +204,53 @@ public class Sintactico {
         } else if (token == Token.NUM) {
             //SI-4
             numero.setValor(lexico.lexema);
-            
+
             sim.setTipo(Token.INT);
 
-                Numero num = new Numero();
-                num.setValor(lexico.lexema);
-                sim.setValor(num);
-                sim.setNombre(null);
+            Numero num = new Numero();
+            num.setValor(lexico.lexema);
+            sim.setValor(num);
+            sim.setNombre(null);
 
+            token = lexico.lex();
+            if (debug) {
+                mensajes.append("simF: " + token + "\n");
+            }
+        } else if (token == Token.PIZQ) {
+            token = lexico.lex();
+            if (debug) {
+                mensajes.append("simF: " + token + "\n");
+            }
+            Simbolo simA = new Simbolo();
+
+            this.simE(simA, numero);
+            //SI-5 numero solo se pasa como argumento
+
+            //S
+            sim.setNombre(simA.getNombre());
+            sim.setValor(simA.getValor());
+
+            sim.setTipo(simA.getTipo());
+
+            if (token == Token.PDER) {
                 token = lexico.lex();
                 if (debug) {
                     mensajes.append("simF: " + token + "\n");
-                }
-            } else if (token == Token.PIZQ) {
-                token = lexico.lex();
-                if (debug) {
-                    mensajes.append("simF: " + token + "\n");
-                }
-                Simbolo simA = new Simbolo();
-
-                this.simE(simA, numero);
-                //SI-5 numero solo se pasa como argumento
-
-                //S
-                sim.setNombre(simA.getNombre());
-                sim.setValor(simA.getValor());
-
-                sim.setTipo(simA.getTipo());
-
-                if (token == Token.PDER) {
-                    token = lexico.lex();
-                    if (debug) {
-                        mensajes.append("simF: " + token + "\n");
-                    }
-                } else {
-                    mensajes.append("Error-4: Se esperaba ')'\n");
                 }
             } else {
-                mensajes.append("Error-3: Se esperaba 'num, variable o ('\n");
+                mensajes.append("Error-4: Se esperaba ')'\n");
             }
+        } else {
+            mensajes.append("Error-3: Se esperaba 'num, variable o ('\n");
         }
-        /**
-         * Analisis sintactico del simbolo T.
-         *
-         * T -> FT' T' -> *FT' T' -> lamda
-    *
-         */
+    }
+
+    /**
+     * Analisis sintactico del simbolo T.
+     *
+     * T -> FT' T' -> *FT' T' -> lamda
+     *
+     */
     private void simT(Simbolo sim, Numero numero) {
         //SI-9
         Numero numeroPrevio = new Numero();
@@ -272,17 +273,15 @@ public class Sintactico {
                 }
                 //S31
                 this.codigoMultiDivi(simPrevio, sim, op);
-//                sim.setNombre(simPrevio.getNombre());
-//                sim.setValor(simPrevio.getValor());
-                
                 //ensamblador
-                String pruebita=sim.getNombre();
-                this.EnsambladorMultiplicacionDivision(simPrevio, sim, op,pruebita);
+                String resultado = sim.getNombre();
+                this.EnsambladorMultiplicacionDivision(simPrevio, sim, op, resultado);
                 sim.setNombre(simPrevio.getNombre());
                 sim.setValor(simPrevio.getValor());
+
                 //SI-10
                 this.interpreteMultiDivi(numeroPrevio, numero, op);
-//                numero.setValor(numeroPrevio.getDoubleValor());
+                numero.setValor(numeroPrevio.getDoubleValor());
 
             }
             if (token == Token.OPARIT) {
@@ -314,7 +313,7 @@ public class Sintactico {
      * Analisis sintactico del simbolo E.
      *
      * E -> TE' E' -> +TE' E' -> lamda
-    *
+     *
      */
     private void simE(Simbolo sim, Numero numero) {
         //SI-6
@@ -339,12 +338,10 @@ public class Sintactico {
                     mensajes.append("Error-8: Tipos diferentes en la expresión\n");
                 }
                 this.codigoSumaResta(simPrevio, sim, op);
-//                sim.setNombre(simPrevio.getNombre());
-//                sim.setValor(simPrevio.getValor());
-                
                 //codigo ensamblador
-                String pruebita=sim.getNombre();
-                this.EnsambladorSumaResta(simPrevio, sim, op,pruebita);
+                //S31
+                String resultado = sim.getNombre();
+                this.EnsambladorSumaResta(simPrevio, sim, op, resultado);
                 sim.setNombre(simPrevio.getNombre());
                 sim.setValor(simPrevio.getValor());
 
@@ -387,8 +384,8 @@ public class Sintactico {
     public StringBuffer getCodigo() {
         return this.codigo;
     }
-    
-    public StringBuffer getEnsamblador(){
+
+    public StringBuffer getEnsamblador() {
         return this.ensamblador;
     }
 
@@ -411,10 +408,10 @@ public class Sintactico {
         simPrevio.setNombre(c.resultado);
 
     }
-    
-     public void EnsambladorMultiplicacionDivision(Simbolo simPrevio, Simbolo sim, String op,String resultado){
-        Ensamblador e=new Ensamblador();
-        e.resultado=resultado;
+
+    public void EnsambladorMultiplicacionDivision(Simbolo simPrevio, Simbolo sim, String op, String resultado) {
+        Ensamblador e = new Ensamblador();
+        e.resultado = resultado;
         if (simPrevio.getNombre() != null) {
             e.arg1 = simPrevio.getValor().getStringValor();
         } else {
@@ -425,14 +422,12 @@ public class Sintactico {
         } else {
             e.arg2 = sim.getNombre();
         }
-        e.op=op;
-        ensamblador.append(e.toString()+"\n");
+        e.op = op;
+        ensamblador.append(e.toString() + "\n");
+        simPrevio.setNombre(e.resultado);
     }
-    
-    
 
     public void codigoSumaResta(Simbolo simPrevio, Simbolo sim, String op) {
-
         Cuadruplo c = new Cuadruplo();
         c.resultado = Main.sTemp.getEtiqueta();
         if (simPrevio.getNombre() == null) {
@@ -449,10 +444,10 @@ public class Sintactico {
         codigo.append(c.toString() + "\n");
         simPrevio.setNombre(c.resultado);
     }
-    
-    public void EnsambladorSumaResta(Simbolo simPrevio, Simbolo sim, String op,String resultado){
-        Ensamblador e=new Ensamblador();
-        e.resultado=resultado;
+
+    public void EnsambladorSumaResta(Simbolo simPrevio, Simbolo sim, String op, String resultado) {
+        Ensamblador e = new Ensamblador();
+        e.resultado = resultado;
         if (simPrevio.getNombre() != null) {
             e.arg1 = simPrevio.getValor().getStringValor();
         } else {
@@ -463,11 +458,10 @@ public class Sintactico {
         } else {
             e.arg2 = sim.getNombre();
         }
-        e.op=op;
-        ensamblador.append(e.toString()+"\n");
+        e.op = op;
+        ensamblador.append(e.toString() + "\n");
         simPrevio.setNombre(e.resultado);
     }
-
 
     //SI-9
     private void interpreteSumaResta(Numero numeroPrevio, Numero numero, String op) {
@@ -486,9 +480,4 @@ public class Sintactico {
         }
     }
 }
-
-
-
-
-
 
